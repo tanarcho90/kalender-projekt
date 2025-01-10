@@ -66,6 +66,26 @@ app.delete('/api/events/:id', (req, res) => {
   res.json({ message: 'Event deleted' });
 });
 
+
+
+const express = require('express');
+const basicAuth = require('express-basic-auth');
+
+app.use(express.static('public'));
+
+// Passwortschutz für /manage.html
+app.use('/manage.html', basicAuth({
+  users: { 'admin': 'meinPasswort' }, // Benutzername und Passwort festlegen
+  challenge: true, // Zeigt den Browser-Authentifizierungsdialog an
+}));
+
+// Start des Servers
+app.listen(3000, () => {
+  console.log('Server läuft auf http://localhost:3000');
+});
+
+
+
 // Server starten
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`);
