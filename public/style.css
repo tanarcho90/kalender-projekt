@@ -97,4 +97,5 @@ p {
 
 .manage {
     background: linear-gradient(180deg, #072840 0%, #010F19 100%);
+    text-align: center;
 }
