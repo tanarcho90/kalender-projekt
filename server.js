@@ -78,11 +78,6 @@ app.use('/manage.html', basicAuth({
   challenge: true, // Zeigt den Browser-Authentifizierungsdialog an
 }));
 
-// Start des Servers
-app.listen(3000, () => {
-  console.log('Server läuft auf http://localhost:3000');
-});
-
 
 
 // Server starten
