@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalender</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="event-slider" class="slider"></div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  fetch('/api/events')
+    .then(response => response.json())
+    .then(events => {
+      // Events filtern und sortieren
+      const filteredSortedEvents = filterAndSortEvents(events);
+
+      const slider = document.getElementById('event-slider');
+      slider.innerHTML = filteredSortedEvents.map(event => `
+        <div class="card ${event.isClosed ? 'closed' : 'open'}">
+          <h2>${event.start === event.end 
+            ? formatDate(event.start) 
+            : `${formatDate(event.start)} - ${formatDate(event.end)}`}</h2>
+          <p>${event.title}</p>
+        </div>
+      `).join('');
+
+      // Dynamische Animation starten
+      startSliderAnimation(slider);
+    });
+});
+
+// Funktion zum Filtern und Sortieren der Events
+function filterAndSortEvents(events) {
+  const today = new Date();
+  return events
+    .filter(event => new Date(event.end) >= today) // Vergangene Termine ausblenden
+    .sort((a, b) => new Date(a.start) - new Date(b.start)); // Nach Startdatum sortieren
+}
+
+// Funktion zur Formatierung des Datums
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}.${month}.${year}`;
+}
+
+// Funktion zum Starten der Animation
+function startSliderAnimation(slider) {
+  const containerWidth = document.querySelector('.slider-container').offsetWidth; // Sichtbare Breite
+  const sliderWidth = slider.scrollWidth; // Gesamte Breite des Sliders
+
+  // Wenn der Slider-Inhalt größer ist als der sichtbare Bereich
+  if (sliderWidth > containerWidth) {
+    const translateDistance = sliderWidth - containerWidth; // Abstand, der geslidet werden soll
+    const duration = translateDistance / 50; // Geschwindigkeit anpassen (50px/s)
+
+    // Setze die Animation dynamisch
+    slider.style.animation = `slide ${duration * 2}s linear infinite`; // Hin- und Rückweg
+    slider.style.animationName = 'slide'; // Aktiviere die Animation
+
+    // Erstelle die Keyframes für die Animation dynamisch
+    const keyframes = `
+      @keyframes slide {
+        0% { transform: translateX(0); }
+        50% { transform: translateX(-${translateDistance}px); }
+        100% { transform: translateX(0); }
+      }
+    `;
+
+    // Füge die Keyframes dynamisch in ein <style>-Element ein
+    const style = document.createElement('style');
+    style.innerHTML = keyframes;
+    document.head.appendChild(style);
+  }
+}
+
+
+// Funktion zum Filtern und Sortieren der Events
+function filterAndSortEvents(events) {
+  const today = new Date();
+  
+  return events
+    .filter(event => new Date(event.end) >= today) // Vergangene Termine ausblenden
+    .sort((a, b) => new Date(a.start) - new Date(b.start)); // Nach Startdatum sortieren
+}
+
+// Funktion zur Formatierung des Datums
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}.${month}.${year}`;
+}
+</script>
+</body>
+</html>

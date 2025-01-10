@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Verwaltung</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Event Verwaltung</h1>
+  <div id="event-list"></div>
+
+  <h2>Neues Event</h2>
+  <form id="event-form">
+    <label for="title">Titel:</label>
+    <input type="text" id="title" required>
+    
+    <label for="start">Startdatum:</label>
+    <input type="date" id="start" required>
+    
+    <label for="end">Enddatum:</label>
+    <input type="date" id="end" required>
+    
+    <label>
+      <input type="checkbox" id="isClosed"> Kita geschlossen?
+    </label>
+    
+    <button type="submit">Hinzufügen</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const list = document.getElementById('event-list');
+
+      fetch('/api/events')
+        .then(response => response.json())
+        .then(events => {
+          // Nur sortieren, ohne vergangene Termine auszublenden
+          const sortedEvents = sortEventsByDate(events);
+
+          list.innerHTML = sortedEvents.map(event => `
+            <div class="card ${event.isClosed ? 'closed' : 'open'}">
+              <h2>${event.title}</h2>
+              <p>${event.start === event.end 
+                ? formatDate(event.start) 
+                : `${formatDate(event.start)} - ${formatDate(event.end)}`}</p>
+              <p>${event.isClosed ? 'Kita geschlossen: Ja' : 'Kita geschlossen: Nein'}</p>
+              <button onclick="deleteEvent(${event.id})">Löschen</button>
+            </div>
+          `).join('');
+        });
+
+      document.getElementById('event-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const start = document.getElementById('start').value;
+        const end = document.getElementById('end').value;
+        const isClosed = document.getElementById('isClosed').checked;
+
+        fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, start, end, isClosed })
+        }).then(() => location.reload());
+      });
+    });
+
+    // Funktion zum Sortieren der Events nach Datum
+    function sortEventsByDate(events) {
+      return events.sort((a, b) => new Date(a.start) - new Date(b.start)); // Nach Startdatum sortieren
+    }
+
+    // Funktion zur Formatierung des Datums
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day}.${month}.${year}`;
+    }
+
+    // Funktion zum Löschen eines Events
+    function deleteEvent(id) {
+      fetch(`/api/events/${id}`, { method: 'DELETE' })
+        .then(() => location.reload());
+    }
+  </script>
+</body>
+</html>
