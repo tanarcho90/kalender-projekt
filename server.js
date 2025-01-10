@@ -11,7 +11,7 @@ const DATA_FILE = path.join(__dirname, 'data', 'events.json');
 
 // Passwortschutz für /manage.html
 app.use('/manage.html', basicAuth({
-    users: { 'admin': 'meinPasswort' }, // Benutzername und Passwort festlegen
+    users: { 'admin': 'klabauterpasswort' }, // Benutzername und Passwort festlegen
     challenge: true, // Zeigt den Browser-Authentifizierungsdialog an
   }));
 
