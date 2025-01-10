@@ -94,3 +94,7 @@ p {
     margin-inline-end: 0px;
     unicode-bidi: isolate;
 }
+
+.manage {
+    background: linear-gradient(180deg, #072840 0%, #010F19 100%);
+}
