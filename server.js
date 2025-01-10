@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const basicAuth = require('express-basic-auth');
+
 
 const app = express();
 const PORT = 3000;
@@ -67,9 +69,6 @@ app.delete('/api/events/:id', (req, res) => {
 });
 
 
-
-const express = require('express');
-const basicAuth = require('express-basic-auth');
 
 app.use(express.static('public'));
 
