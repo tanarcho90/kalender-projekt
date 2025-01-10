@@ -1,20 +1,20 @@
-# 1. Basis-Image für Node.js (hier Version 18 verwendet)
+# 1. Basis-Image für Node.js (leichtgewichtige Version für bessere Performance)
 FROM node:18-alpine
 
 # 2. Arbeitsverzeichnis erstellen
 WORKDIR /app
 
-# 3. Nur package.json und package-lock.json kopieren (für sauberen Installationsprozess)
+# 3. Nur package.json und package-lock.json kopieren (für optimierten Build-Cache)
 COPY package.json package-lock.json ./
 
-# 4. Abhängigkeiten installieren
+# 4. Produktionsabhängigkeiten installieren
 RUN npm install --production
 
-# 5. App-Dateien kopieren
+# 5. App-Dateien kopieren (HTML, CSS, JS, etc.)
 COPY . .
 
-# 6. Port freigeben (3000 ist Standard, falls dein Server auf einem anderen Port läuft, ändere ihn hier)
+# 6. Port freigeben (Standard: 3000)
 EXPOSE 3000
 
-# 7. Start der Anwendung (falls du "npm start" nutzt, passt das bereits)
+# 7. Start der Anwendung (via npm start oder direkt mit node)
 CMD ["npm", "start"]
