@@ -9,6 +9,12 @@ const app = express();
 const PORT = 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'events.json');
 
+// Passwortschutz für /manage.html
+app.use('/manage.html', basicAuth({
+    users: { 'admin': 'meinPasswort' }, // Benutzername und Passwort festlegen
+    challenge: true, // Zeigt den Browser-Authentifizierungsdialog an
+  }));
+
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -67,18 +73,6 @@ app.delete('/api/events/:id', (req, res) => {
   saveEvents(updatedEvents);
   res.json({ message: 'Event deleted' });
 });
-
-
-
-app.use(express.static('public'));
-
-// Passwortschutz für /manage.html
-app.use('/manage.html', basicAuth({
-  users: { 'admin': 'meinPasswort' }, // Benutzername und Passwort festlegen
-  challenge: true, // Zeigt den Browser-Authentifizierungsdialog an
-}));
-
-
 
 // Server starten
 app.listen(PORT, () => {
